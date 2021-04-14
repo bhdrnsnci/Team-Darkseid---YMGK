@@ -1,45 +1,33 @@
-# 03_face_recognition.py
-
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 
-# UTF-8 string printing enabled
-def print_utf8_text(image, xy, text, color):  # utf-8 characters
+def print_utf8_text(image, xy, text, color):
     fontName = 'tahoma.ttf'
-    font = ImageFont.truetype(fontName, 24)  # select font
-    img_pil = Image.fromarray(image)  # convert image to pillow mode
-    draw = ImageDraw.Draw(img_pil)  # prepare image
-    draw.text((xy[0], xy[1]), text, font=font,
-              fill=(color[0], color[1], color[2], 0))  # b,g,r,a
-    image = np.array(img_pil)  # convert image to cv2 mode (numpy.array())
+    font = ImageFont.truetype(fontName, 24)
+    img_pil = Image.fromarray(image)
+    draw = ImageDraw.Draw(img_pil)
+    draw.text((xy[0], xy[1]), text, font=font, fill=(color[0], color[1], color[2], 0))
+    image = np.array(img_pil)
     return image
-
 
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.read('training/trainer.yml')
 cascadePath = "face.xml"
 faceCascade = cv2.CascadeClassifier(cascadePath);
 font = cv2.FONT_HERSHEY_SIMPLEX
-# initiate id counter
 id = 0
 names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
-# Initialize and start realtime video capture
-cam = cv2.VideoCapture(1)
+
+camera = cv2.VideoCapture(1)
 while True:
-    ret, img = cam.read()
-    # img = cv2.flip(img, -1)  # Flip vertically
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.2,
-        minNeighbors=5
-    )
+    ret, frame = camera.read()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = faceCascade.detectMultiScale(gray, scaleFactor=1.2, minNeighbors=5)
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
         id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
-        # Check if confidence is less them 100 ==> "0" is perfect match
         if (confidence < 100):
             id = names[id]
             confidence = "  {0}%".format(round(100 - confidence))
@@ -48,15 +36,13 @@ while True:
             confidence = "  {0}%".format(round(100 - confidence))
 
         color = (255, 255, 255)
-        img = print_utf8_text(img, (x + 5, y - 25), str(id), color)
-        # cv2.putText(img, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
-        cv2.putText(img, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
+        frame = print_utf8_text(frame, (x + 5, y - 25), str(id), color)
+        cv2.putText(frame, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
 
-    cv2.imshow('camera', img)
-    k = cv2.waitKey(10) & 0xff  # Press 'ESC' for exiting video
+    cv2.imshow('camera', frame)
+    k = cv2.waitKey(10) & 0xff
     if k == 27 or k == ord('q'):
         break
-# Do a bit of cleanup
-print("\n [INFO] Programdan çıkıyor ve ortalığı temizliyorum")
-cam.release()
+
+camera.release()
 cv2.destroyAllWindows()
