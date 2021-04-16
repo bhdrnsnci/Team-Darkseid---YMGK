@@ -126,6 +126,8 @@ a.animated-button.victoria-two:after {
   background-color: transparent;
   color: #0188ff8c;
 }
+.jumbotron {
+}
 a {
   color: #fff;
   text-decoration: none;
@@ -134,39 +136,28 @@ a:hover {
   color: #eee;
   text-decoration: none;
 }
+#cmr{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.camera {
+  width: 45%;
+  margin: 10px 0;
+  border: #FFF 5px inset;
+}
 </style>
-<div style="text-align: right; padding: 5px 20px;"><a href="index.html">Çıkış yap</a></div>
+<div style="text-align: right; padding: 5px 20px;"><a href="/out">Çıkış Yap</a></div>
 <div class="jumbotron text-center">
 
   <div class="container">
     
-    <h1>Yüz Tanıma</h1>
-    <p style="color:#888;">Biyometrik Güvenlik</p>
+    <h1>Kameralar</h1>
     
   </div>
 </div>
-<div class="container"> 
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h2>Menü</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/cameras" class="btn btn-sm animated-button victoria-two">Kameralar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/create" class="btn btn-sm animated-button victoria-one">Kayıt</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/users" class="btn btn-sm animated-button victoria-one">Kullanıcılar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/guests" class="btn btn-sm animated-button victoria-two">Misafirler</a>
-    </div>
-  </div>
+<div id="cmr">
+  <img src="{{ url_for('createCam')}}" class="camera">
 </div>
 </body>
 </html>

@@ -126,6 +126,8 @@ a.animated-button.victoria-two:after {
   background-color: transparent;
   color: #0188ff8c;
 }
+.jumbotron {
+}
 a {
   color: #fff;
   text-decoration: none;
@@ -134,39 +136,53 @@ a:hover {
   color: #eee;
   text-decoration: none;
 }
+#lgn{
+  text-align: center;
+}
+#lgn input{
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px;
+  color: #353535;
+}
+#lgn a {
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
+.camera {
+  width: 300px;
+  margin: 10px 0;
+  border: #FFF 5px inset;
+  position: absolute;
+  left: 100;
+}
 </style>
-<div style="text-align: right; padding: 5px 20px;"><a href="index.html">Çıkış yap</a></div>
+<div style="text-align: right; padding: 5px 20px;"><a href="../register">Kayıt Ol</a></div>
 <div class="jumbotron text-center">
 
   <div class="container">
     
-    <h1>Yüz Tanıma</h1>
-    <p style="color:#888;">Biyometrik Güvenlik</p>
+    <h1>Giriş Yap</h1>
     
   </div>
 </div>
-<div class="container"> 
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h2>Menü</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/cameras" class="btn btn-sm animated-button victoria-two">Kameralar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/create" class="btn btn-sm animated-button victoria-one">Kayıt</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/users" class="btn btn-sm animated-button victoria-one">Kullanıcılar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/guests" class="btn btn-sm animated-button victoria-two">Misafirler</a>
-    </div>
-  </div>
+<div id="lgn">
+  <form name="loginForm" method="POST">
+    <img src="{{ url_for('loginCamera')}}" class="camera">
+    <br>
+    <label for="username">Kullanıcı Adı:</label>
+    <br>
+    <input type="text" placeholder="Kullanıcı Adı" name="username" id="username">
+    <br>
+    <label for="pass">Şifre:</label>
+    <br>
+    <input type="password" placeholder="Şifre" name="pass" id="pass">
+    <br>
+    <input type="submit" class="btn btn-sm animated-button victoria-one buton" value="Giriş Yap">
+    <a href="/loginFunc" class="btn btn-sm animated-button victoria-one buton">Giriş</a>
+    Kayıtlı değil misiniz? <br>O zaman buradan <u><a href="../register">Kayıt Ol</a></u>abilirsiniz.
+  </form>
 </div>
 </body>
 </html>
