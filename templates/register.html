@@ -139,13 +139,13 @@ a:hover {
 #lgn{
   text-align: center;
 }
-#lgn > input{
+#lgn input{
   width: 300px;
   margin-bottom: 20px;
   padding: 10px;
   color: #353535;
 }
-#lgn > a {
+#lgn a {
   width: 300px;
   margin-bottom: 20px;
   padding: 10px;
@@ -168,30 +168,37 @@ a:hover {
   </div>
 </div>
 <div id="lgn">
-  <img src="{{ url_for('createCam')}}" class="camera">
-  <br>
-  <label for="username">Kullanıcı Adı</label>
-  <br>
-  <input type="text" placeholder="Kullanıcı Adı" name="username" id="username">
-  <br>
-  <label for="email">E Posta</label>
-  <br>
-  <input type="email" placeholder="E Posta" name="email" id="email">
-  <br>
-  <label for="phone">Telefon</label>
-  <br>
-  <input type="tel" placeholder="Telefon" name="phone" id="phone">
-  <br>
-  <label for="superscription">Ünvan</label>
-  <br>
-  <input type="text" placeholder="Ünvan" name="superscription" id="superscription">
-  <br>
-  <label for="pass">Şifre</label>
-  <br>
-  <input type="password" placeholder="Şifre" name="pass" id="pass">
-  <br>
-  <a href="#" class="btn btn-sm animated-button victoria-one buton">Kayıt</a>
-  Zaten kayıtlı mısınız? <br>O zaman buradan <u><a href="/login">Giriş Yap</a></u>abilirsiniz.
+  <form name="formRegister" action="http://127.0.0.1:5000/formRegister" method="POST">
+    <img src="{{ url_for('createCam')}}" class="camera">
+    <br>
+    <label for="name">Adı ve Soyadı</label>
+    <br>
+    <input type="text" placeholder="Adı ve Soyadı" name="name" id="name">
+    <br>
+    <label for="username">Kullanıcı Adı</label>
+    <br>
+    <input type="text" placeholder="Kullanıcı Adı" name="username" id="username">
+    <br>
+    <label for="email">E Posta</label>
+    <br>
+    <input type="email" placeholder="E Posta" name="email" id="email">
+    <br>
+    <label for="phone">Telefon</label>
+    <br>
+    <input type="tel" placeholder="Telefon" name="phone" id="phone">
+    <br>
+    <label for="rank">Ünvan</label>
+    <br>
+    <input type="text" placeholder="Ünvan" name="rank" id="rank">
+    <br>
+    <label for="password">Şifre</label>
+    <br>
+    <input type="password" placeholder="Şifre" name="password" id="password">
+    <br>
+    <input type="submit" name="submit" value="Giriş Yap" class="btn btn-sm animated-button victoria-one buton">
+    <a href="#" class="btn btn-sm animated-button victoria-one buton">Kayıt</a>
+    Zaten kayıtlı mısınız? <br>O zaman buradan <u><a href="/login">Giriş Yap</a></u>abilirsiniz.
+  </form>
 </div>
 </body>
 </html>

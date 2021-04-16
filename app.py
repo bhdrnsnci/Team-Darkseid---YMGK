@@ -2,9 +2,15 @@ import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from flask import Flask, Response, render_template, redirect, url_for, request
+import sqlite3
 import os
 
 app = Flask(__name__)
+#
+# with sqlite3.connect("FaceDatabase.db") as usersdb:
+#     cursor = usersdb.cursor()
+#     cursor.execute("create table users(id)")
+
 
 global userData
 userData = ""
@@ -198,7 +204,7 @@ def streamCreate():
         k = cv2.waitKey(300) & 0xff
         if k == 27:
             cam = False
-        elif count >= 60:
+        elif count >= 10:
             cam = False
 
 
@@ -231,6 +237,21 @@ def training():
     #   Yüz kayıt
 
 
+@app.route("/formRegister", methods = ["POST", "GET"])
+def formRegister():
+    try:
+        if request.method == "POST":
+            name = request.form.get("name")
+            username = request.form.get("username")
+            email = request.form.get("email")
+            phone = request.form.get("phone")
+            rank = request.form.get("rank")
+            password = request.form.get("password")
+            return render_template("logink.html", name=name, username=username, email=email, phone=phone, rank=rank, password=password)
+
+    except:
+        return render_template("logink.html", hata="Bir şeyler yolunda gitmedi :(")
+
 @app.route('/createCam')
 def createCam():
     return Response(streamCreate(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -244,11 +265,6 @@ def create():
 @app.route('/redirec')
 def redirec():
     return render_template('redirect.html')
-
-
-@app.route('/')
-def index():
-    return render_template('index.html')
 
 
 @app.route('/login')
@@ -276,5 +292,10 @@ def parse3():
     return render_template('index.html')
 
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
