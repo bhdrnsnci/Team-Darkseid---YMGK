@@ -157,6 +157,18 @@ a:hover {
   position: absolute;
   left: 100;
 }
+#error {
+  width: 300px;
+  background-color: #e32c36;
+  border-left: 7px solid #a41f27;
+  border-radius: 5px;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 12px;
+  color: #fff;
+  line-height: 35px;
+  margin: 15px auto;
+}
 </style>
 <div style="text-align: right; padding: 5px 20px;"><a href="/login">Giriş Yap</a></div>
 <div class="jumbotron text-center" style="clear: both;">
@@ -168,6 +180,9 @@ a:hover {
   </div>
 </div>
 <div id="lgn">
+  <div id="{{ id }}">
+    {{ hata }}
+  </div>
   <form name="formRegister" action="/formRegister" method="POST">
     <br>
     <label for="name">Adı ve Soyadı</label>
@@ -193,6 +208,7 @@ a:hover {
     <label for="password">Şifre</label>
     <br>
     <input type="password" placeholder="Şifre" name="password" id="password">
+    <br>
     <br>
     <input type="submit" name="submit" value="Giriş Yap" class="btn btn-sm animated-button victoria-one buton">
     <br>

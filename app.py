@@ -5,14 +5,8 @@ from flask import Flask, Response, render_template, redirect, url_for, request, 
 import sqlite3
 import os
 
-from sqlalchemy.sql.functions import user
-
 app = Flask(__name__)
-
-global userData
-userData = ""
-
-
+hata = ""
 
 #   Webcam
 def stream():
@@ -28,7 +22,7 @@ def stream():
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.read('training/trainer.yml')
     cascadePath = "face.xml"
-    faceCascade = cv2.CascadeClassifier(cascadePath);
+    faceCascade = cv2.CascadeClassifier(cascadePath)
     font = cv2.FONT_HERSHEY_SIMPLEX
     id = 0
     names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
@@ -57,7 +51,7 @@ def stream():
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData + b'\r\n')
     #   Ipcam
 
-
+#   Ipcam
 def stream1():
     def print_utf8_text(image, xy, text, color):
         fontName1 = 'tahoma.ttf'
@@ -71,7 +65,7 @@ def stream1():
     recognizer1 = cv2.face.LBPHFaceRecognizer_create()
     recognizer1.read('training/trainer.yml')
     cascadePath1 = "face.xml"
-    faceCascade1 = cv2.CascadeClassifier(cascadePath1);
+    faceCascade1 = cv2.CascadeClassifier(cascadePath1)
     font1 = cv2.FONT_HERSHEY_SIMPLEX
     id = 0
     names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
@@ -98,16 +92,6 @@ def stream1():
         imgShow1 = cv2.imencode('.jpg', frame1)[1]
         imgData1 = imgShow1.tobytes()
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData1 + b'\r\n')
-
-
-@app.route('/camera')
-def camera():
-    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/camera1')
-def camera1():
-    return Response(stream1(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 def streamLoginCamera():
@@ -168,38 +152,6 @@ def streamLoginCamera():
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData + b'\r\n')
 
 
-@app.route("/users", methods=["POST", "GET"])
-def users():
-    with sqlite3.connect("FaceDatabase.db") as usersdb:
-        usersdb.row_factory = sqlite3.Row
-
-        cursor = usersdb.cursor()
-        cursor.execute("select * from users")
-        rows = cursor.fetchall()
-        return render_template("users.html", rows=rows)
-
-
-@app.route("/guests", methods=["POST", "GET"])
-def guests():
-    with sqlite3.connect("FaceDatabase.db") as usersdb:
-        usersdb.row_factory = sqlite3.Row
-
-        cursor = usersdb.cursor()
-        cursor.execute("select * from users where rank='Misafir'")
-        rows = cursor.fetchall()
-        return render_template("guests.html", rows=rows)
-
-
-@app.route('/loginCamera')
-def loginCamera():
-    return Response(streamLoginCamera(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/cameras')
-def cameras():
-    return render_template('cameras.html')
-
-
 def streamCreate():
     camera = cv2.VideoCapture(1)
     camera.set(3, 640)
@@ -257,30 +209,84 @@ def training():
     #   Yüz kayıt
 
 
-@app.route("/formRegister", methods=["POST", "GET"])
-def formRegister():
-    try:
-        if request.method == "POST":
-            print("1")
-            name = request.form.get("name")
-            username = request.form.get("username")
-            email = request.form.get("email")
-            phone = request.form.get("phone")
-            rank = request.form.get("rank")
-            password = request.form.get("password")
+# @app.route('/loginCamera')
+# def loginCamera():
+#     return Response(streamLoginCamera(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-            with sqlite3.connect("FaceDatabase.db") as usersdb:
-                cursor = usersdb.cursor()
-                cursor.execute("insert into users("
-                               "name, username, email, phone, rank, password)"
-                               "values(?, ?, ?, ?, ?, ?)", (name, username, email, phone, rank, password))
-                usersdb.commit()
-                print("2")
 
-            return render_template("login.html")
+@app.route("/logout")
+def logout():
+    if session["logedin"] == True:
+        session["logedin"] = False
+        return redirect(url_for("index"))
+    else:
+        return redirect(url_for("login"))
 
-    except:
-        return render_template("users.html", hata="Bir şeyler yolunda gitmedi :(")
+
+@app.route("/users", methods=["POST", "GET"])
+def users():
+    if session["logedin"] == True:
+        with sqlite3.connect("FaceDatabase.db") as usersdb:
+            usersdb.row_factory = sqlite3.Row
+            cursor = usersdb.cursor()
+            cursor.execute("select * from users")
+            rows = cursor.fetchall()
+            return render_template("users.html", rows=rows)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/guests", methods=["POST", "GET"])
+def guests():
+    if session["logedin"] == True:
+        with sqlite3.connect("FaceDatabase.db") as usersdb:
+            usersdb.row_factory = sqlite3.Row
+
+            cursor = usersdb.cursor()
+            cursor.execute("select * from users where rank='Misafir'")
+            rows = cursor.fetchall()
+            return render_template("guests.html", rows=rows)
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route('/createCam')
+def createCam():
+    return Response(streamCreate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/create')
+def create():
+    if session["logedin"] == True:
+        return render_template('create.html')
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route('/camera')
+def camera():
+    return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/camera1')
+def camera1():
+    return Response(stream1(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/cameras')
+def cameras():
+    if session["logedin"] == True:
+        return render_template('cameras.html')
+    else:
+        return redirect(url_for("login"))
+
+
+@app.route("/menu")
+def menu():
+    if session["logedin"] == True:
+        return render_template("menu.html")
+    else:
+        return redirect(url_for("login"))
 
 
 @app.route("/formLogin", methods=["POST", "GET"])
@@ -290,50 +296,79 @@ def formLogin():
         password = request.form.get("password")
         usersdb = sqlite3.connect("FaceDatabase.db")
         cursor = usersdb.cursor()
+        # cursor.execute("create table users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, username TEXT NOT "
+        #                 "NULL, email TEXT NOT NULL, phone TEXT NOT NULL, rank TEXT NOT NULL, password TEXT NOT NULL)")
         cursor.execute("select * from users where username = '" + username + "'")
         rows = cursor.fetchall()
+        if username == "" or password == "":
+            return render_template("login.html", hata="* Lütfen tüm alanları doldurun!", id="error")
         for row in rows:
             if username == row[2]:
                 if password == row[6]:
+                    session["logedin"] = True
+                    session["username"] = username
                     return redirect(url_for("menu"))
                 else:
-                    return render_template("login.html", hata="Şifre yanlış!")
-    return render_template("login.html", hata="Kullanıcı adı yanlış!")
-
-
-@app.route("/logout")
-def logout():
-    return redirect(url_for("index"))
-
-@app.route('/createCam')
-def createCam():
-    return Response(streamCreate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-@app.route('/create')
-def create():
-    return render_template('create.html')
+                    return render_template("login.html", hata="* Şifre yanlış!", id="error")
+    return render_template("login.html", hata="* Kullanıcı adı yanlış!", id="error")
 
 
 @app.route('/login')
 def login():
-    return render_template('login.html')
+    if session["logedin"] == False:
+        return render_template('login.html')
+    else:
+        return redirect(url_for('menu'))
+
+
+@app.route("/formRegister", methods=["POST", "GET"])
+def formRegister():
+    try:
+        if request.method == "POST":
+            name = request.form.get("name")
+            username = request.form.get("username")
+            email = request.form.get("email")
+            phone = request.form.get("phone")
+            rank = request.form.get("rank")
+            password = request.form.get("password")
+            if name == "" or username == "" or email == "" or phone == "" or rank == "" or password == "":
+                return render_template("register.html", hata="* Lütfen tüm alanları doldurun!", id="error")
+            with sqlite3.connect("FaceDatabase.db") as usersdb:
+                cursor = usersdb.cursor()
+                cursor.execute("select * from users where username = '" + username + "' or email = '" + email + "'")
+                rows = cursor.fetchall()
+                for row in rows:
+                    if username == row[2]:
+                        return render_template("register.html", hata="* Kullanıcı adı zaten kayıtlı!", id="error")
+                    elif email == row[3]:
+                        return render_template("register.html", hata="* E Posta zaten kayıtlı!", id="error")
+
+                cursor.execute("insert into users("
+                               "name, username, email, phone, rank, password)"
+                               "values(?, ?, ?, ?, ?, ?)", (name, username, email, phone, rank, password))
+                usersdb.commit()
+
+            return render_template("login.html", hata="Kayıt başarılı :)", id="complete")
+
+    except:
+        return render_template("register.html", hata="Bir şeyler yolunda gitmedi :(")
 
 
 @app.route('/register')
 def register():
-    return render_template('register.html')
-
-
-@app.route("/menu")
-def menu():
-    return render_template("menu.html")
+    if session["logedin"] == False:
+        return render_template('register.html')
+    else:
+        return redirect(url_for("menu"))
 
 
 @app.route('/')
 def index():
+    session["logedin"] = False
     return render_template('index.html')
 
 
 if __name__ == '__main__':
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True)

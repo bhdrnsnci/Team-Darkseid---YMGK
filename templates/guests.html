@@ -143,7 +143,35 @@ a:hover {
 }
 .item {
   float: left;
-  margin: 5px 10px;
+  margin: 15px 10px 5px 10px;
+}
+.itemt {
+  float: left;
+  margin: 5px 10px 5px 10px;
+}
+.identity {
+  width: 30px;
+}
+.name {
+  width: 250px;
+}
+.username {
+  width: 150px;
+}
+.email {
+  width: 250px;
+}
+.phone {
+  width: 150px;
+}
+table {
+  margin: 0px auto;
+}
+tr {
+  border-bottom: 1px dashed #fff;
+}
+.table-title {
+  border: 1px solid #fff;
 }
 </style>
 <div style="float: left; padding: 5px 20px;"><a href="/menu">Menü</a></div>
@@ -157,14 +185,24 @@ a:hover {
   </div>
 </div>
 <div id="userlist">
+  <table>
+    <tr class="table-title">
+      <td class="itemt identity"> Id </td>
+      <td class="itemt name"> Adı ve Soyadı </td>
+      <td class="itemt username"> Kullanıcı Adı </td>
+      <td class="itemt email"> E Posta </td>
+      <td class="itemt phone"> Telefon </td>
+    </tr>
   {% for r in rows: %}
-    <div class="item">{{ r["id"] }}.</div>
-    <div class="item">{{ r["name"] }}</div>
-    <div class="item">{{ r["username"] }}</div>
-    <div class="item">{{ r["email"] }}</div>
-    <div class="item">{{ r["phone"] }}</div>
-    <br>
+    <tr>
+      <td class="item identity"> {{ r["id"] }}. </td>
+      <td class="item name"> {{ r["name"] }} </td>
+      <td class="item username"> {{ r["username"] }} </td>
+      <td class="item email"> {{ r["email"] }} </td>
+      <td class="item phone"> {{ r["phone"] }} </td>
+    </tr>
   {% endfor %}
+  </table>
   {{hata}}
 </div>
 </body>
