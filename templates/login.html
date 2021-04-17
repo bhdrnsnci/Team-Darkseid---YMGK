@@ -158,8 +158,8 @@ a:hover {
   left: 100;
 }
 </style>
-<div style="text-align: right; padding: 5px 20px;"><a href="../register">Kayıt Ol</a></div>
-<div class="jumbotron text-center">
+<div style="text-align: right; padding: 5px 20px;"><a href="/register">Kayıt Ol</a></div>
+<div class="jumbotron text-center" style="clear: both;">
 
   <div class="container">
     
@@ -168,19 +168,19 @@ a:hover {
   </div>
 </div>
 <div id="lgn">
-  <form name="loginForm" method="POST">
-    <img src="{{ url_for('loginCamera')}}" class="camera">
+  {{ hata }}
+  <form name="formLogin" action="/formLogin" method="POST">
     <br>
     <label for="username">Kullanıcı Adı:</label>
     <br>
     <input type="text" placeholder="Kullanıcı Adı" name="username" id="username">
     <br>
-    <label for="pass">Şifre:</label>
+    <label for="password">Şifre:</label>
     <br>
-    <input type="password" placeholder="Şifre" name="pass" id="pass">
+    <input type="password" placeholder="Şifre" name="password" id="password">
     <br>
     <input type="submit" class="btn btn-sm animated-button victoria-one buton" value="Giriş Yap">
-    <a href="/loginFunc" class="btn btn-sm animated-button victoria-one buton">Giriş</a>
+    <br>
     Kayıtlı değil misiniz? <br>O zaman buradan <u><a href="../register">Kayıt Ol</a></u>abilirsiniz.
   </form>
 </div>

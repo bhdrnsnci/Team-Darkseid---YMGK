@@ -126,6 +126,8 @@ a.animated-button.victoria-two:after {
   background-color: transparent;
   color: #0188ff8c;
 }
+.jumbotron {
+}
 a {
   color: #fff;
   text-decoration: none;
@@ -134,39 +136,36 @@ a:hover {
   color: #eee;
   text-decoration: none;
 }
+#userlist {
+  width: 80%;
+  margin: 0 auto;
+  text-align: left;
+}
+.item {
+  float: left;
+  margin: 5px 10px;
+}
 </style>
-<div style="text-align: right; padding: 5px 20px;"><a href="index.html">Çıkış yap</a></div>
-<div class="jumbotron text-center">
+<div style="float: left; padding: 5px 20px;"><a href="/menu">Menü</a></div>
+<div style="float: right; padding: 5px 20px;"><a href="/logout">Çıkış yap</a></div>
+<div class="jumbotron text-center" style="clear: both;">
 
   <div class="container">
     
-    <h1>Yüz Tanıma</h1>
-    <p style="color:#888;">Biyometrik Güvenlik</p>
+    <h1>Kullanıcılar</h1>
     
   </div>
 </div>
-<div class="container"> 
-  <div class="row">
-    <div class="col-md-12 text-center">
-      <h2>Menü</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/cameras" class="btn btn-sm animated-button victoria-two">Kameralar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/create" class="btn btn-sm animated-button victoria-one">Kayıt</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/users" class="btn btn-sm animated-button victoria-one">Kullanıcılar</a>
-    </div>
-    <div class="col-md-6 col-sm-6 col-xs-6">
-      <a href="/guests" class="btn btn-sm animated-button victoria-two">Misafirler</a>
-    </div>
-  </div>
+<div id="userlist">
+  {% for r in rows: %}
+    <div class="item">{{ r["id"] }}.</div>
+    <div class="item">{{ r["name"] }}</div>
+    <div class="item">{{ r["username"] }}</div>
+    <div class="item">{{ r["email"] }}</div>
+    <div class="item">{{ r["phone"] }}</div>
+    <br>
+  {% endfor %}
+  {{hata}}
 </div>
 </body>
 </html>

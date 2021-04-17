@@ -136,26 +136,37 @@ a:hover {
   color: #eee;
   text-decoration: none;
 }
-#cmr{
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
+#userlist {
+  width: 80%;
+  margin: 0 auto;
+  text-align: left;
 }
-.camera {
-  width: 45%;
-  margin: 10px 0;
-  border: #FFF 5px inset;
+.item {
+  float: left;
+  margin: 5px 10px;
 }
 </style>
-<div style="text-align: right; padding: 5px;"><a href="main.html">Giriş Yap</a> | <a href="kayit.html">Kayıt Ol</a></div>
-<div class="jumbotron text-center">
+<div style="float: left; padding: 5px 20px;"><a href="/menu">Menü</a></div>
+<div style="float: right; padding: 5px 20px;"><a href="/logout">Çıkış yap</a></div>
+<div class="jumbotron text-center" style="clear: both;">
 
   <div class="container">
     
-    <h1>Kameralar</h1>
-    <p style="color:#888;">Bu işlem biraz zaman alabilir. Lütfen bekleyin otomatik olarak yönlendirileceksiniz.</p>
+    <h1>Kullanıcılar</h1>
     
   </div>
+</div>
+<div id="userlist">
+  {% for r in rows: %}
+    <div class="item">{{ r["id"] }}.</div>
+    <div class="item">{{ r["name"] }}</div>
+    <div class="item">{{ r["username"] }}</div>
+    <div class="item">{{ r["email"] }}</div>
+    <div class="item">{{ r["phone"] }}</div>
+    <br>
+   <br>
+  {% endfor %}
+  {{hata}}
 </div>
 </body>
 </html>

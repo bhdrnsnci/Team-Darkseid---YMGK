@@ -159,7 +159,7 @@ a:hover {
 }
 </style>
 <div style="text-align: right; padding: 5px 20px;"><a href="/login">Giriş Yap</a></div>
-<div class="jumbotron text-center">
+<div class="jumbotron text-center" style="clear: both;">
 
   <div class="container">
     
@@ -168,8 +168,7 @@ a:hover {
   </div>
 </div>
 <div id="lgn">
-  <form name="formRegister" action="http://127.0.0.1:5000/formRegister" method="POST">
-    <img src="{{ url_for('createCam')}}" class="camera">
+  <form name="formRegister" action="/formRegister" method="POST">
     <br>
     <label for="name">Adı ve Soyadı</label>
     <br>
@@ -196,7 +195,7 @@ a:hover {
     <input type="password" placeholder="Şifre" name="password" id="password">
     <br>
     <input type="submit" name="submit" value="Giriş Yap" class="btn btn-sm animated-button victoria-one buton">
-    <a href="#" class="btn btn-sm animated-button victoria-one buton">Kayıt</a>
+    <br>
     Zaten kayıtlı mısınız? <br>O zaman buradan <u><a href="/login">Giriş Yap</a></u>abilirsiniz.
   </form>
 </div>

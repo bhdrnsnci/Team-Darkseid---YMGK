@@ -1,19 +1,18 @@
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-from flask import Flask, Response, render_template, redirect, url_for, request
+from flask import Flask, Response, render_template, redirect, url_for, request, session
 import sqlite3
 import os
 
-app = Flask(__name__)
-#
-# with sqlite3.connect("FaceDatabase.db") as usersdb:
-#     cursor = usersdb.cursor()
-#     cursor.execute("create table users(id)")
+from sqlalchemy.sql.functions import user
 
+app = Flask(__name__)
 
 global userData
 userData = ""
+
+
 
 #   Webcam
 def stream():
@@ -169,6 +168,28 @@ def streamLoginCamera():
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData + b'\r\n')
 
 
+@app.route("/users", methods=["POST", "GET"])
+def users():
+    with sqlite3.connect("FaceDatabase.db") as usersdb:
+        usersdb.row_factory = sqlite3.Row
+
+        cursor = usersdb.cursor()
+        cursor.execute("select * from users")
+        rows = cursor.fetchall()
+        return render_template("users.html", rows=rows)
+
+
+@app.route("/guests", methods=["POST", "GET"])
+def guests():
+    with sqlite3.connect("FaceDatabase.db") as usersdb:
+        usersdb.row_factory = sqlite3.Row
+
+        cursor = usersdb.cursor()
+        cursor.execute("select * from users where rank='Misafir'")
+        rows = cursor.fetchall()
+        return render_template("guests.html", rows=rows)
+
+
 @app.route('/loginCamera')
 def loginCamera():
     return Response(streamLoginCamera(), mimetype='multipart/x-mixed-replace; boundary=frame')
@@ -208,7 +229,6 @@ def streamCreate():
             cam = False
 
 
-
 def training():
     path = 'dataset'
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -237,20 +257,53 @@ def training():
     #   Yüz kayıt
 
 
-@app.route("/formRegister", methods = ["POST", "GET"])
+@app.route("/formRegister", methods=["POST", "GET"])
 def formRegister():
     try:
         if request.method == "POST":
+            print("1")
             name = request.form.get("name")
             username = request.form.get("username")
             email = request.form.get("email")
             phone = request.form.get("phone")
             rank = request.form.get("rank")
             password = request.form.get("password")
-            return render_template("logink.html", name=name, username=username, email=email, phone=phone, rank=rank, password=password)
+
+            with sqlite3.connect("FaceDatabase.db") as usersdb:
+                cursor = usersdb.cursor()
+                cursor.execute("insert into users("
+                               "name, username, email, phone, rank, password)"
+                               "values(?, ?, ?, ?, ?, ?)", (name, username, email, phone, rank, password))
+                usersdb.commit()
+                print("2")
+
+            return render_template("login.html")
 
     except:
-        return render_template("logink.html", hata="Bir şeyler yolunda gitmedi :(")
+        return render_template("users.html", hata="Bir şeyler yolunda gitmedi :(")
+
+
+@app.route("/formLogin", methods=["POST", "GET"])
+def formLogin():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        usersdb = sqlite3.connect("FaceDatabase.db")
+        cursor = usersdb.cursor()
+        cursor.execute("select * from users where username = '" + username + "'")
+        rows = cursor.fetchall()
+        for row in rows:
+            if username == row[2]:
+                if password == row[6]:
+                    return redirect(url_for("menu"))
+                else:
+                    return render_template("login.html", hata="Şifre yanlış!")
+    return render_template("login.html", hata="Kullanıcı adı yanlış!")
+
+
+@app.route("/logout")
+def logout():
+    return redirect(url_for("index"))
 
 @app.route('/createCam')
 def createCam():
@@ -262,19 +315,9 @@ def create():
     return render_template('create.html')
 
 
-@app.route('/redirec')
-def redirec():
-    return render_template('redirect.html')
-
-
 @app.route('/login')
 def login():
     return render_template('login.html')
-
-@app.route('/loginFunc')
-def loginFunc():
-    print("asdf")
-    return render_template("login.html")
 
 
 @app.route('/register')
@@ -282,14 +325,9 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/users')
-def parse2():
-    return render_template('main.html')
-
-
-@app.route('/guests')
-def parse3():
-    return render_template('index.html')
+@app.route("/menu")
+def menu():
+    return render_template("menu.html")
 
 
 @app.route('/')
