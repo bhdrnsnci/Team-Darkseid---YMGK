@@ -24,8 +24,15 @@ def stream():
     cascadePath = "face.xml"
     faceCascade = cv2.CascadeClassifier(cascadePath)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    id = 0
-    names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
+    id = 1
+    names = ['None']
+
+    with sqlite3.connect("FaceDatabase.db") as facedb:
+        cursor = facedb.cursor()
+        cursor.execute("select * from face")
+        rows = cursor.fetchall()
+        for r in rows:
+            names.append(r[1])
 
     camera = cv2.VideoCapture(0)
     while True:
@@ -67,8 +74,15 @@ def stream1():
     cascadePath1 = "face.xml"
     faceCascade1 = cv2.CascadeClassifier(cascadePath1)
     font1 = cv2.FONT_HERSHEY_SIMPLEX
-    id = 0
-    names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
+    id = 1
+    names = ['None']
+
+    with sqlite3.connect("FaceDatabase.db") as facedb:
+        cursor = facedb.cursor()
+        cursor.execute("select * from face")
+        rows = cursor.fetchall()
+        for r in rows:
+            names.append(r[1])
 
     camera1 = cv2.VideoCapture(1)
     while True:
@@ -82,17 +96,16 @@ def stream1():
                 id = names[id]
                 confidence = "  {0}%".format(round(100 - confidence))
             else:
-                id = "bilinmiyor"
+                id = "Bilinmeyen Kişi"
                 confidence = "  {0}%".format(round(100 - confidence))
 
             color = (255, 255, 255)
-            frame = print_utf8_text(frame1, (x + 5, y - 25), str(id), color)
+            frame1 = print_utf8_text(frame1, (x + 5, y - 25), str(id), color)
             cv2.putText(frame1, str(confidence), (x + 5, y + h - 5), font1, 1, (255, 255, 0), 1)
 
         imgShow1 = cv2.imencode('.jpg', frame1)[1]
         imgData1 = imgShow1.tobytes()
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData1 + b'\r\n')
-
 
 def streamLoginCamera():
     def print_utf8_text(image, xy, text, color):
@@ -109,13 +122,20 @@ def streamLoginCamera():
     cascadePath = "face.xml"
     faceCascade = cv2.CascadeClassifier(cascadePath)
     font = cv2.FONT_HERSHEY_SIMPLEX
-    id = 0
-    names = ['None', 'Bahadır Nişancı', 'Mustafa Kemal Atatürk', 'Neşe Hanım', 'Enver Paşa']
+    id = 1
+    global userData
+    names = ['None']
 
-    camera = cv2.VideoCapture(1)
+    with sqlite3.connect("FaceDatabase.db") as facedb:
+        cursor = facedb.cursor()
+        cursor.execute("select * from face")
+        rows = cursor.fetchall()
+        for r in rows:
+            names.append(r[1])
+
+    camera = cv2.VideoCapture(0)
     control = 0
     verification = 0
-    userData = ""
     cam = True
     while cam:
         _, frame = camera.read()
@@ -129,7 +149,6 @@ def streamLoginCamera():
                 confidence = "  {0}%".format(round(100 - confidence))
                 if control == 5:
                     if verification >= 3:
-                        print(userData)
                         cam = False
                     control = 0
                     verification = 0
@@ -153,13 +172,19 @@ def streamLoginCamera():
 
 
 def streamCreate():
-    camera = cv2.VideoCapture(1)
+    camera = cv2.VideoCapture(0)
     camera.set(3, 640)
     camera.set(4, 480)
     face_detector = cv2.CascadeClassifier('face.xml')
-    face_id = input('\n Id: ')
-    face_name = input('\n Ad: ')
+
+    staffdb = sqlite3.connect("FaceDatabase.db")
+    cursor = staffdb.cursor()
+    cursor.execute("select * from face where id = (select max(id) from staff)")
+    rows = cursor.fetchall()
+    face_id = rows[0][0]
+    face_ad = rows[0][1]
     count = 0
+    images = []
     cam = True
     while cam:
         _, frame = camera.read()
@@ -168,19 +193,25 @@ def streamCreate():
         for (x, y, w, h) in faces:
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             count += 1
-            cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y + h, x:x + w])
+            cv2.imwrite("dataset/"+ face_ad +"." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y + h, x:x + w])
 
         imgShow = cv2.imencode('.jpg', frame)[1]
         imgData = imgShow.tobytes()
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData + b'\r\n')
 
         k = cv2.waitKey(300) & 0xff
+        next = cv2.imread("image.jpg")
+        nexts = cv2.imencode(".jpg", next)[1]
+        nextsh = nexts.tobytes()
         if k == 27:
             cam = False
-        elif count >= 10:
+            yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
+        elif count >= 50:
             cam = False
+            yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
+    training()
 
-
+@app.route("/training")
 def training():
     path = 'dataset'
     recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -206,13 +237,9 @@ def training():
     recognizer.write('training/trainer.yml')
     print("\n Tamamlandı.".format(len(np.unique(ids))))
 
-    #   Yüz kayıt
-
-
-# @app.route('/loginCamera')
-# def loginCamera():
-#     return Response(streamLoginCamera(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
+@app.route('/loginCamera')
+def loginCamera():
+    return Response(streamLoginCamera(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route("/logout")
 def logout():
@@ -222,19 +249,17 @@ def logout():
     else:
         return redirect(url_for("login"))
 
-
-@app.route("/users", methods=["POST", "GET"])
-def users():
+@app.route("/staff", methods=["POST", "GET"])
+def staff():
     if session["logedin"] == True:
         with sqlite3.connect("FaceDatabase.db") as usersdb:
             usersdb.row_factory = sqlite3.Row
             cursor = usersdb.cursor()
-            cursor.execute("select * from users")
+            cursor.execute("select * from staff")
             rows = cursor.fetchall()
-            return render_template("users.html", rows=rows)
+            return render_template("staff.html", rows=rows)
     else:
         return redirect(url_for("login"))
-
 
 @app.route("/guests", methods=["POST", "GET"])
 def guests():
@@ -249,11 +274,9 @@ def guests():
     else:
         return redirect(url_for("login"))
 
-
 @app.route('/createCam')
 def createCam():
     return Response(streamCreate(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 @app.route('/create')
 def create():
@@ -262,16 +285,13 @@ def create():
     else:
         return redirect(url_for("login"))
 
-
 @app.route('/camera')
 def camera():
     return Response(stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
 @app.route('/camera1')
 def camera1():
     return Response(stream1(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
 
 @app.route('/cameras')
 def cameras():
@@ -280,14 +300,12 @@ def cameras():
     else:
         return redirect(url_for("login"))
 
-
 @app.route("/menu")
 def menu():
     if session["logedin"] == True:
         return render_template("menu.html")
     else:
         return redirect(url_for("login"))
-
 
 @app.route("/formLogin", methods=["POST", "GET"])
 def formLogin():
@@ -296,30 +314,41 @@ def formLogin():
         password = request.form.get("password")
         usersdb = sqlite3.connect("FaceDatabase.db")
         cursor = usersdb.cursor()
-        # cursor.execute("create table users(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, username TEXT NOT "
-        #                 "NULL, email TEXT NOT NULL, phone TEXT NOT NULL, rank TEXT NOT NULL, password TEXT NOT NULL)")
-        cursor.execute("select * from users where username = '" + username + "'")
+        cursor.execute("select * from staff where username = '" + username + "'")
         rows = cursor.fetchall()
+        cursor.execute("select * from admin where username = '" + username + "'")
+        rowsA = cursor.fetchall()
         if username == "" or password == "":
             return render_template("login.html", hata="* Lütfen tüm alanları doldurun!", id="error")
-        for row in rows:
+
+        for row in rowsA:
             if username == row[2]:
-                if password == row[6]:
+                if password == row[3]:
                     session["logedin"] = True
                     session["username"] = username
                     return redirect(url_for("menu"))
                 else:
                     return render_template("login.html", hata="* Şifre yanlış!", id="error")
+
+        for row in rows:
+            if username == row[2]:
+                if userData == row[1]:
+                    if password == row[3]:
+                        session["logedin"] = True
+                        session["username"] = username
+                        return redirect(url_for("menu"))
+                    else:
+                        return render_template("login.html", hata="* Şifre yanlış!", id="error")
+                else:
+                    return render_template("login.html", hata="* Sizi tanıyamadık!", id="error")
     return render_template("login.html", hata="* Kullanıcı adı yanlış!", id="error")
 
-
-@app.route('/login')
+@app.route('/login', methods=["POST", "GET"])
 def login():
     if session["logedin"] == False:
-        return render_template('login.html')
+        return render_template('login.html', hata="* Lütfen kameraya bakın ve gülümseyin :)", id="complete")
     else:
         return redirect(url_for('menu'))
-
 
 @app.route("/formRegister", methods=["POST", "GET"])
 def formRegister():
@@ -329,44 +358,49 @@ def formRegister():
             username = request.form.get("username")
             email = request.form.get("email")
             phone = request.form.get("phone")
-            rank = request.form.get("rank")
+            department = request.form.get("department")
             password = request.form.get("password")
-            if name == "" or username == "" or email == "" or phone == "" or rank == "" or password == "":
+            if name == "" or username == "" or email == "" or phone == "" or department == "" or password == "":
                 return render_template("register.html", hata="* Lütfen tüm alanları doldurun!", id="error")
-            with sqlite3.connect("FaceDatabase.db") as usersdb:
-                cursor = usersdb.cursor()
-                cursor.execute("select * from users where username = '" + username + "' or email = '" + email + "'")
-                rows = cursor.fetchall()
-                for row in rows:
-                    if username == row[2]:
-                        return render_template("register.html", hata="* Kullanıcı adı zaten kayıtlı!", id="error")
-                    elif email == row[3]:
-                        return render_template("register.html", hata="* E Posta zaten kayıtlı!", id="error")
+            else:
+                with sqlite3.connect("FaceDatabase.db") as usersdb:
+                    cursor = usersdb.cursor()
+                    cursor.execute("select * from staff where username = '" + username + "' or email = '" + email + "'")
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        if username == row[2]:
+                            return render_template("register.html", hata="* Kullanıcı adı zaten kayıtlı!", id="error")
+                        elif email == row[3]:
+                            return render_template("register.html", hata="* E Posta zaten kayıtlı!", id="error")
 
-                cursor.execute("insert into users("
-                               "name, username, email, phone, rank, password)"
-                               "values(?, ?, ?, ?, ?, ?)", (name, username, email, phone, rank, password))
-                usersdb.commit()
+                # return render_template("create.html", hata="Bu işlem biraz uzun sürebilir lütfen bekleyin...")
 
-            return render_template("login.html", hata="Kayıt başarılı :)", id="complete")
-
+                with sqlite3.connect("FaceDatabase.db") as staffdb:
+                    cursor = staffdb.cursor()
+                    cursor.execute("insert into staff("
+                                   "name, username, password, email, phone, department)"
+                                   "values(?, ?, ?, ?, ?, ?)", (name, username, password, email, phone, department))
+                    cursor.execute("insert into face(name) values(?)", (name,))
+                    staffdb.commit()
+                return render_template("create.html", hata="* Bu işlem biraz uzun sürebilir lütfen bekleyin...", id="complete")
     except:
-        return render_template("register.html", hata="Bir şeyler yolunda gitmedi :(")
-
+        return render_template("register.html", hata="* Bir şeyler yolunda gitmedi :(", id="error")
 
 @app.route('/register')
 def register():
     if session["logedin"] == False:
-        return render_template('register.html')
+        with sqlite3.connect("FaceDatabase.db") as usersdb:
+            cursor = usersdb.cursor()
+            cursor.execute("select * from departments")
+            deps = cursor.fetchall()
+            return render_template('register.html', deps=deps)
     else:
         return redirect(url_for("menu"))
-
 
 @app.route('/')
 def index():
     session["logedin"] = False
     return render_template('index.html')
-
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'

@@ -137,28 +137,83 @@ a:hover {
   text-decoration: none;
 }
 #cmr{
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
+  text-align:center;
 }
 .camera {
   width: 45%;
   margin: 10px 0;
   border: #FFF 5px inset;
 }
+#error {
+  width: 500px;
+  background-color: #e32c36;
+  border-left: 7px solid #a41f27;
+  border-radius: 5px;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 12px;
+  color: #fff;
+  line-height: 35px;
+  margin: 15px auto;
+}
+#complete {
+  width: 500px;
+  background-color: #2ce359;
+  border-left: 7px solid #25c14b;
+  border-radius: 5px;
+  padding: 10px 20px;
+  text-align: left;
+  font-size: 12px;
+  color: #fff;
+  line-height: 25px;
+  margin: 0 auto;
+}#lgn{
+  text-align: center;
+  width: 70%;
+  margin: 0 auto;
+}
+#lgn input, #department{
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px;
+  color: #353535;
+}
+.buton {
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px;
+  color: #353535;
+  background-color: #fff;
+}
+#lgn a {
+  width: 300px;
+  margin-bottom: 20px;
+  padding: 10px;
+}
 </style>
-<div style="float: left; padding: 5px 20px;"><a href="/menu">Menü</a></div>
-<div style="float: right; padding: 5px 20px;"><a href="/logout">Çıkış yap</a></div>
+<div style="text-align: right; padding: 5px 20px;"> </div>
 <div class="jumbotron text-center" style="clear: both;">
 
   <div class="container">
     
-    <h1>Kameralar</h1>
+    <h1>Gülümseyin ve Bekleyin</h1>
     
   </div>
 </div>
-<div id="cmr">
-  <img src="{{ url_for('createCam')}}" class="camera">
+<div id="lgn">
+
+  <div id="{{ id }}">
+    {{ hata }}
+  </div>
+  <br>
+
+  <div id="cmr">
+    <img src="{{ url_for('createCam') }}" class="camera">
+  </div>
+  <form name="formLogin" action="/login" method="POST">
+    <input type="submit" class="btn btn-sm animated-button victoria-one buton" value="Devam">
+  </form>
+
 </div>
 </body>
 </html>
