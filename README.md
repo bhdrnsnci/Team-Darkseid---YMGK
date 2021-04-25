@@ -13,6 +13,7 @@
 
 1.  Veri tabanı yeni oluşturulduğundan sadece yönetici hesabı mevcuttur. 
     Kullanıcı adı: admin ve şifre: admin olarak giriş yapabilirsiniz.
+<<<<<<< HEAD
 2.  Kullanıcı kaydı yapmadan önce admin olarak giriş yapıp birim kaydı yapmalısınız.
 3.  Henüz giriş yapmadıysanız açılış ekranın sağ üst köşesinde bulunan "Giriş Yap" seçeneğini kullanarak giriş 
     yapabilir veya "Kayıt Ol" seçeneğini kullanarak kayıt olabilirsiniz.
@@ -23,3 +24,14 @@
     yapabilirsiniz. Aynı zamanda tüm kameralara erişebilir, yeni kameralar ekleyebilir ve çalışanların erişebileceği
     kameraları yönetebilirsiniz.
 7.  Çalışan hesabı ile giriş yaptığınızda ziyaretçi ekleyebilir ve erişiminize izin verilen kameraları izleyebilirsiniz.
+=======
+2.  Henüz giriş yapmadıysanız açılış ekranın sağ üst köşesinde bulunan "Kayıt Ol" seçeneğini kullanaran kayıt olabilir, 
+    "Giriş Yap" seçeneğini kullanarak giriş yapabilirsiniz.
+3.  Açılış ekranından erişebildiğiniz "Kayıt Ol" seçeneği çalışanlar içindir. Yönetici kaydı için admin hesabını
+    kullanarak yeni yönetici ekleyebilir ve güncellemeler yapabilirsiniz.
+4.  Kayıt ve Giriş aşamalarını geçtikten sonra "Menü" ekranına yönlendirileceksiniz.
+5.  Yönetici hesabıyla giriş yaptığınızda yönetici, çalışan veya ziyaretçi ekleyebilir, güncelleme ve silme 
+    yapabilirsiniz. Aynı zamanda tüm kameralara erişebilir, yeni kameralar ekleyebilir ve çalışanların erişebileceği
+    kameraları yönetebilirsiniz.
+6.  Çalışan hesabı ile giriş yaptığınızda ziyaretçi ekleyebilir ve erişiminize izin verilen kameraları izleyebilirsiniz.
+>>>>>>> origin/main
