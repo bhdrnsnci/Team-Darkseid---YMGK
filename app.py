@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__)
 hata = ""
+userData = ""
 
 #   Webcam
 def stream():
@@ -268,7 +269,7 @@ def guests():
             usersdb.row_factory = sqlite3.Row
 
             cursor = usersdb.cursor()
-            cursor.execute("select * from users where rank='Misafir'")
+            cursor.execute("select * from guests")
             rows = cursor.fetchall()
             return render_template("guests.html", rows=rows)
     else:
@@ -278,10 +279,28 @@ def guests():
 def createCam():
     return Response(streamCreate(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/create')
-def create():
+@app.route("/registerAdmin")
+def registerAdmin():
     if session["logedin"] == True:
-        return render_template('create.html')
+        with sqlite3.connect("FaceDatabase.db") as vt:
+            cursor = vt.cursor()
+            cursor.execute("select * from admin where username = '" + session["username"] + "'")
+            rows = cursor.fetchall()
+            for r in rows:
+                if session["username"] == r[2]:
+                    return render_template("register-admin.html")
+        return redirect(url_for("login"))
+    else:
+        return redirect(url_for("login"))
+
+@app.route('/registerGuest')
+def registerGuest():
+    if session["logedin"] == True:
+        with sqlite3.connect("FaceDatabase.db") as usersdb:
+            cursor = usersdb.cursor()
+            cursor.execute("select * from departments")
+            deps = cursor.fetchall()
+            return render_template('register-guest.html', deps=deps)
     else:
         return redirect(url_for("login"))
 
@@ -303,9 +322,41 @@ def cameras():
 @app.route("/menu")
 def menu():
     if session["logedin"] == True:
-        return render_template("menu.html")
+        with sqlite3.connect("FaceDatabase.db") as vt:
+            cursor = vt.cursor()
+            cursor.execute("select * from admin where username = '" + session["username"] + "'")
+            rows = cursor.fetchall()
+            for r in rows:
+                if session["username"] == r[2]:
+                    return render_template("menu.html")
+        return render_template("menu.html", show="none")
+
     else:
         return redirect(url_for("login"))
+
+@app.route("/formRegisterAdmin", methods=["POST", "GET"])
+def formRegisterAdmin():
+    try:
+        if request.method == "POST":
+            name = request.form.get("name")
+            username = request.form.get("username")
+            password = request.form.get("password")
+            if name == "" or username == "" or password == "":
+                return render_template("register-admin.html", hata="* Lütfen tüm alanları doldurun!", id="error")
+            else:
+                with sqlite3.connect("FaceDatabase.db") as vt:
+                    cursor = vt.cursor()
+                    cursor.execute("select * from admin where username = '" + username + "'")
+                    rows = cursor.fetchall()
+                    for r in rows:
+                        if username == r[2]:
+                            return render_template("register-admin.html", hata="* Kullanıcı adı zaten kayıtlı.", id="error")
+                    cursor.execute("insert into admin(name, username, password) values(?, ?, ?)", (name, username, password))
+                    vt.commit()
+                return redirect("menu")
+    except:
+        return render_template("register-admin.html")
+
 
 @app.route("/formLogin", methods=["POST", "GET"])
 def formLogin():
@@ -350,6 +401,38 @@ def login():
     else:
         return redirect(url_for('menu'))
 
+@app.route("/formRegisterGuest", methods=["POST", "GET"])
+def formRegisterGuest():
+    try:
+        if request.method == "POST":
+            tc = request.form.get("tc")
+            name = request.form.get("name")
+            address = request.form.get("address")
+            phone = request.form.get("phone")
+            department = request.form.get("department")
+            staff = session["username"]
+            if tc == "" or name == "" or address == "" or phone == "" or department == "":
+                return render_template("register-guest.html", hata="* Lütfen tüm alanları doldurun!", id="error")
+            else:
+                with sqlite3.connect("FaceDatabase.db") as usersdb:
+                    cursor = usersdb.cursor()
+                    cursor.execute("select * from guests where tc = '" + tc + "'")
+                    rows = cursor.fetchall()
+                    for r in rows:
+                        if tc == r[1]:
+                            return render_template("register-guest.html", hata="* Ziyaretçi zaten kayıtlı!", id="error")
+
+                    cursor.execute("insert into guests(tc, name, address, phone, department, staff) values(?, ?, ?, ?, ?, ?)", (tc, name, address, phone, department, staff))
+                    cursor.execute("insert into face(name) values(?)", (name,))
+                    usersdb.commit()
+                return render_template("create.html", hata="* Bu işlem biraz uzun sürebilir lütfen bekleyin...", id="complete")
+    except:
+        with sqlite3.connect("FaceDatabase.db") as usersdb:
+            cursor = usersdb.cursor()
+            cursor.execute("select * from departments")
+            deps = cursor.fetchall()
+            return render_template("register-guest.html", deps=deps, hata="* Bir şeyler yolunda gitmedi :(", id="error")
+
 @app.route("/formRegister", methods=["POST", "GET"])
 def formRegister():
     try:
@@ -372,8 +455,6 @@ def formRegister():
                             return render_template("register.html", hata="* Kullanıcı adı zaten kayıtlı!", id="error")
                         elif email == row[3]:
                             return render_template("register.html", hata="* E Posta zaten kayıtlı!", id="error")
-
-                # return render_template("create.html", hata="Bu işlem biraz uzun sürebilir lütfen bekleyin...")
 
                 with sqlite3.connect("FaceDatabase.db") as staffdb:
                     cursor = staffdb.cursor()

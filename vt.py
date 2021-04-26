@@ -12,7 +12,6 @@ with sqlite3.connect("FaceDatabase.db") as usersdb:
     #     department
     #     password
     #     cameras
-    #     images
     cursor.execute("create table staff(id integer primary key autoincrement, name text, username text, password text, email text, phone text, department text, cameras text)")
 
     # ziyaretçi
@@ -22,8 +21,8 @@ with sqlite3.connect("FaceDatabase.db") as usersdb:
     #     address
     #     phone
     #     department
-    #     images
-    cursor.execute("create table guests(id integer primary key autoincrement, tc text, name text, address text, phone text, department text)")
+    #     staff
+    cursor.execute("create table guests(id integer primary key autoincrement, tc text, name text, address text, phone text, department text, staff text)")
 
     # birim
     #     id
