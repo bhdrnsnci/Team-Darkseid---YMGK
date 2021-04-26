@@ -211,6 +211,46 @@ def streamCreate():
             yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
     training()
 
+@app.route("/formDepartment", methods=["POST", "GET"])
+def formDepartment():
+    try:
+        if request.method == "POST":
+            name = request.form.get("department")
+            if name == "":
+                return render_template("department.html", hata="* Lütfen tüm alanları doldurun!", id="error")
+            else:
+                with sqlite3.connect("FaceDatabase.db") as vt:
+                    cursor = vt.cursor()
+                    cursor.execute("select * from departments where name = '" + name + "'")
+                    rows = cursor.fetchall()
+                    for row in rows:
+                        if name == row[1]:
+                            return render_template("department.html", hata="* Birim zaten kayıtlı!", id="error")
+
+                with sqlite3.connect("FaceDatabase.db") as depvt:
+                    cursor = depvt.cursor()
+                    cursor.execute("insert into departments(name) values(?)", (name,))
+                    depvt.commit()
+                return render_template("department.html", hata="* Birim eklendi.", id="complete")
+    except:
+        return render_template("department.html", hata="* Bir şeyler yolunda gitmedi :(", id="error")
+
+
+@app.route("/department")
+def department():
+    if session["logedin"] == True:
+        with sqlite3.connect("FaceDatabase.db") as vt:
+            cursor = vt.cursor()
+            cursor.execute("select * from admin where username = '" + session["username"] + "'")
+            rows = cursor.fetchall()
+            for r in rows:
+                if session["username"] == r[2]:
+                    return render_template("department.html")
+        return redirect(url_for("menu"))
+    else:
+        return redirect(url_for("login"))
+
+
 @app.route("/training")
 def training():
     path = 'dataset'
@@ -288,7 +328,7 @@ def registerAdmin():
             for r in rows:
                 if session["username"] == r[2]:
                     return render_template("register-admin.html")
-        return redirect(url_for("login"))
+        return redirect(url_for("menu"))
     else:
         return redirect(url_for("login"))
 
@@ -354,7 +394,7 @@ def formRegisterAdmin():
                     vt.commit()
                 return redirect("menu")
     except:
-        return render_template("register-admin.html")
+        return render_template("register-admin.html", hata="* Bir şeyler yolunda gitmedi :(", id="error")
 
 @app.route("/formLogin", methods=["POST", "GET"])
 def formLogin():

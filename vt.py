@@ -46,7 +46,7 @@ with sqlite3.connect("FaceDatabase.db") as usersdb:
     #     password
     cursor.execute("create table admin(id integer primary key autoincrement, name text, username text, password text)")
     cursor.execute("insert into admin(username, password) values(?, ?)", ("admin", "admin"))
-    cursor.execute("insert into departments(name) values(?)", ("Yazılım Mühendisliği",))
+    # cursor.execute("insert into departments(name) values(?)", ("Yazılım Mühendisliği",))
     usersdb.commit()
 
 print("Veri tabanı oluşturuldu.")
