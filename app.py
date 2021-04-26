@@ -171,7 +171,6 @@ def streamLoginCamera():
         imgData = imgShow.tobytes()
         yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + imgData + b'\r\n')
 
-
 def streamCreate():
     camera = cv2.VideoCapture(0)
     camera.set(3, 640)
@@ -356,7 +355,6 @@ def formRegisterAdmin():
                 return redirect("menu")
     except:
         return render_template("register-admin.html")
-
 
 @app.route("/formLogin", methods=["POST", "GET"])
 def formLogin():

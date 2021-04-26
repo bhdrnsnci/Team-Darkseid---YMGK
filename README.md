@@ -12,15 +12,10 @@
 **KULANIM**
 
 1.  Veri tabanı yeni oluşturulduğundan sadece yönetici hesabı mevcuttur. 
-<<<<<<< HEAD
-=======
-    Kullanıcı adı: admin ve şifre: admin olarak giriş yapabilirsiniz.
-<<<<<<< HEAD
->>>>>>> 7be114fbb689470355b825734923aa61bdf15aa8
 2.  Kullanıcı kaydı yapmadan önce admin olarak giriş yapıp birim kaydı yapmalısınız.
-    Kullanıcı adı: admin ve şifre: admin olarak giriş yapabilirsiniz.
+    Kullanıcı adı: "admin" ve şifre: "admin" olarak giriş yapabilirsiniz.
     Yüz kaydı oluşturulmadığından konsolda sistemi etkilemeyecek hatalar ile karşılaşabilirsiniz.
-3.  Henüz giriş yapmadıysanız açılış ekranın sağ üst köşesinde bulunan "Giriş Yap" seçeneğini kullanarak giriş 
+3.  Açılış ekranın sağ üst köşesinde bulunan "Giriş Yap" seçeneğini kullanarak giriş 
     yapabilir veya "Kayıt Ol" seçeneğini kullanarak kayıt olabilirsiniz.
 4.  Açılış ekranından erişebildiğiniz "Kayıt Ol" seçeneği çalışanlar içindir. Yönetici kaydı için admin hesabını
     kullanarak yeni yönetici ekleyebilir ve güncellemeler yapabilirsiniz.
@@ -31,19 +26,7 @@
 7.  Yönetici hesabıyla giriş yaptığınızda yönetici, çalışan veya ziyaretçi ekleyebilir, güncelleme ve silme 
     yapabilirsiniz. Aynı zamanda tüm kameralara erişebilir, yeni kameralar ekleyebilir ve çalışanların erişebileceği
     kameraları yönetebilirsiniz.
-<<<<<<< HEAD
 8.  Çalışan hesabı ile giriş yaptığınızda ziyaretçi ekleyebilir ve erişiminize izin verilen kameraları izleyebilirsiniz.
-=======
-7.  Çalışan hesabı ile giriş yaptığınızda ziyaretçi ekleyebilir ve erişiminize izin verilen kameraları izleyebilirsiniz.
-=======
-2.  Henüz giriş yapmadıysanız açılış ekranın sağ üst köşesinde bulunan "Kayıt Ol" seçeneğini kullanaran kayıt olabilir, 
-    "Giriş Yap" seçeneğini kullanarak giriş yapabilirsiniz.
-3.  Açılış ekranından erişebildiğiniz "Kayıt Ol" seçeneği çalışanlar içindir. Yönetici kaydı için admin hesabını
-    kullanarak yeni yönetici ekleyebilir ve güncellemeler yapabilirsiniz.
-4.  Kayıt ve Giriş aşamalarını geçtikten sonra "Menü" ekranına yönlendirileceksiniz.
-5.  Yönetici hesabıyla giriş yaptığınızda yönetici, çalışan veya ziyaretçi ekleyebilir, güncelleme ve silme 
-    yapabilirsiniz. Aynı zamanda tüm kameralara erişebilir, yeni kameralar ekleyebilir ve çalışanların erişebileceği
-    kameraları yönetebilirsiniz.
-6.  Çalışan hesabı ile giriş yaptığınızda ziyaretçi ekleyebilir ve erişiminize izin verilen kameraları izleyebilirsiniz.
->>>>>>> origin/main
->>>>>>> 7be114fbb689470355b825734923aa61bdf15aa8
+
+**Hata ile karşılaşırsanız mail atmaktan çekinmeyin.**
+    bhdrnsnci@gmail.com
