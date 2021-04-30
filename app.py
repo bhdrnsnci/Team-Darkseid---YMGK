@@ -206,7 +206,7 @@ def streamCreate():
         if k == 27:
             cam = False
             yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
-        elif count >= 50:
+        elif count >= 10:
             cam = False
             yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
     training()
@@ -235,7 +235,6 @@ def formDepartment():
     except:
         return render_template("department.html", hata="* Bir şeyler yolunda gitmedi :(", id="error")
 
-
 @app.route("/department")
 def department():
     if session["logedin"] == True:
@@ -249,7 +248,6 @@ def department():
         return redirect(url_for("menu"))
     else:
         return redirect(url_for("login"))
-
 
 @app.route("/training")
 def training():
