@@ -206,7 +206,7 @@ def streamCreate():
         if k == 27:
             cam = False
             yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
-        elif count >= 10:
+        elif count >= 50:
             cam = False
             yield (b'--frame\r\n'b'Content-Type: text/plain\r\n\r\n' + nextsh + b'\r\n')
     training()
